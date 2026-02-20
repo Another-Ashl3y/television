@@ -8,6 +8,9 @@ from pycaw.pycaw import AudioUtilities
 from math import log10
 
 import json
+from importlib.resources import files
+
+
 
 pygame.joystick.init()
 pygame.font.init()
@@ -125,8 +128,9 @@ class Main:
 		self.current_font = 0
 		self.font_size = 20
 		
-		self.font = pygame.font.Font("fonts/2.ttf", 20)
-		self.big_font = pygame.font.Font("fonts/2.ttf", 24)
+		self.font = None
+		self.big_font = None
+		self.load_fonts()
 
 		self.offset_list = {}
 		self.folders = []
@@ -179,9 +183,9 @@ class Main:
 		self.on_change_directory()
 
 	def load_fonts(self):
-		loaded_font = os.listdir("fonts")[self.current_font]
-		self.font = pygame.font.Font("fonts/" + loaded_font, self.font_size)
-		self.big_font = pygame.font.Font("fonts/" + loaded_font, self.font_size+4)
+		loaded_font = os.listdir(files("pelevision").joinpath("fonts"))[self.current_font]
+		self.font = pygame.font.Font(files("pelevision").joinpath("fonts/" + loaded_font), self.font_size)
+		self.big_font = pygame.font.Font(files("pelevision").joinpath("fonts/" + loaded_font), self.font_size+4)
 
 	def start_text_control(self):
 		self.up = Key(self.decr_selected_text)
@@ -513,7 +517,10 @@ class Main:
 			self.video.draw(self.video_surface, self.video_position, force_draw=False)
 			self.video_times[self.video_name] = self.video.get_pos()
 
-		surface.blit(self.video_surface)
+		if self.video == None:
+			surface.blit(self.video_surface, (0,0))
+		else:
+			surface.blit(self.video_surface)
 
 	def incr_setting(self):
 		self.selected_setting += 1
@@ -947,5 +954,5 @@ def run():
 	g = Main()
 	g.run()
 
-if __name__ == "__main__":
-	run()
+# if __name__ == "__main__":
+# 	run()

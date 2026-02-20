@@ -23,3 +23,6 @@ source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pelevision"]
+include = [
+  "src/pelevision/fonts/*.ttf"
+]
