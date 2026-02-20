@@ -943,7 +943,9 @@ class Main:
 			json.dump(session_data, f)
 		self.alive = False
 
-
-if __name__ == "__main__":
+def run():
 	g = Main()
 	g.run()
+
+if __name__ == "__main__":
+	run()

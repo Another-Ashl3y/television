@@ -1,0 +1,25 @@
+[build-system]
+requires = [
+    "hatchling>=1.26",
+    "hatch-vcs"
+]
+build-backend = "hatchling.build"
+
+[project]
+name="pelevision"
+dynamic = ["version"]
+dependencies = [
+  "pygame",
+  "pyvidplayer2",
+  "pycaw",
+]
+requires-python = ">= 3.8"
+
+[project.scripts]
+pelevision = "main:run"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pelevision"]
