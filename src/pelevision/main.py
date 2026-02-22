@@ -74,7 +74,7 @@ class Key:
 
 class Main:
 	def __init__(self):
-		self.win = pygame.display.set_mode(flags=pygame.FULLSCREEN)
+		self.win = pygame.display.set_mode((500,500))#flags=pygame.FULLSCREEN)
 
 		self.alive = True
 
@@ -102,6 +102,17 @@ class Main:
 
 		self.r2 = Key(self.incr_tab)
 		self.l2 = Key(self.decr_tab)
+
+		
+		self.k_up = Key(self.decr_selected, delay_time=0.05)
+		self.k_down = Key(self.incr_selected, delay_time=0.05)
+		self.k_left = Key(self.do_nothing)
+		self.k_right = Key(self.do_nothing)
+		self.k_back = Key(self.go_parent_folder)
+		self.k_enter = Key(self.enter_directory)
+
+		self.k_r2 = Key(self.incr_tab)
+		self.k_l2 = Key(self.decr_tab)
 
 		self.device = AudioUtilities.GetSpeakers()
 		print("Audio control: ", self.device.FriendlyName)
@@ -199,6 +210,7 @@ class Main:
 		self.font_size += 1
 		self.font_size = min(self.max_font_size, self.font_size)
 		self.load_fonts()
+	
 	def decr_font_size(self):
 		self.font_size -= 1
 		self.font_size = max(self.min_font_size, self.font_size)
@@ -225,9 +237,12 @@ class Main:
 		self.load_fonts()
 
 	def incr_selected_text(self):
+	
 		self.selected_text_setting += 1
+	
 	def decr_selected_text(self):
 		self.selected_text_setting -= 1
+	
 	def sanitize_selected_text(self):
 		self.selected_text_setting = min(len(self.text_control_options)-1,max(0, self.selected_text_setting))
 
@@ -291,7 +306,6 @@ class Main:
 
 		surface.blit(current_selection, (10, max_height))
 		
-
 	def incr_volume_select(self):
 		self.selected_volume_setting += 1
 		self.sanitise_volume_select()
@@ -356,6 +370,12 @@ class Main:
 		self.right = Key(self.do_nothing)
 		self.back = Key(self.go_parent_folder)
 		self.enter = Key(self.enter_directory)
+		self.k_up = Key(self.decr_selected, delay_time=0.05)
+		self.k_down = Key(self.incr_selected, delay_time=0.05)
+		self.k_left = Key(self.do_nothing)
+		self.k_right = Key(self.do_nothing)
+		self.k_back = Key(self.go_parent_folder)
+		self.k_enter = Key(self.enter_directory)
 		self.current_menu_function = self.run_search
 
 	def start_settings_menu(self):
@@ -365,6 +385,12 @@ class Main:
 		self.right = Key(self.do_nothing)
 		self.back = Key(self.do_nothing)
 		self.enter = Key(self.click_setting)
+		self.k_up = Key(self.decr_setting, delay_time=0.05)
+		self.k_down = Key(self.incr_setting, delay_time=0.05)
+		self.k_left = Key(self.do_nothing)
+		self.k_right = Key(self.do_nothing)
+		self.k_back = Key(self.do_nothing)
+		self.k_enter = Key(self.click_setting)
 		self.current_menu_function = self.run_settings
 
 	def return_to_settings_menu(self):
@@ -382,7 +408,17 @@ class Main:
 		self.right = Key(self.wind_video, delay_time=0.01)
 		self.back = Key(self.do_nothing)
 		self.enter = Key(self.toggle_pause)
+		self.k_up = Key(self.incr_master_volume, delay_time=0.05)
+		self.k_down = Key(self.decr_master_volume, delay_time=0.05)
+		self.k_left = Key(self.rewind_video)
+		self.k_right = Key(self.wind_video)
+		self.k_enter = Key(self.start_settings_menu)
+		self.k_back = Key(self.do_nothing)
+		self.k_enter = Key(self.toggle_pause)
 		self.current_menu_function = self.run_video
+
+		
+
 		self.resize_video()
 		if self.video != None:
 			self.video.seek(self.video_times[self.video_name], False)
@@ -422,6 +458,13 @@ class Main:
 		self.left = Key(self.decr_selected_volume)
 		self.right = Key(self.incr_selected_volume)
 		self.back = Key(self.start_settings_menu)
+
+		
+		self.k_up = Key(self.decr_volume_select, delay_time=0.05)
+		self.k_down = Key(self.incr_volume_select, delay_time=0.05)
+		self.k_left = Key(self.decr_selected_volume)
+		self.k_right = Key(self.incr_selected_volume)
+		self.k_enter = Key(self.start_settings_menu)
 
 		self.current_menu_function = self.run_volume_control
 
@@ -517,10 +560,7 @@ class Main:
 			self.video.draw(self.video_surface, self.video_position, force_draw=False)
 			self.video_times[self.video_name] = self.video.get_pos()
 
-		if self.video == None:
-			surface.blit(self.video_surface, (0,0))
-		else:
-			surface.blit(self.video_surface)
+		surface.blit(self.video_surface, (0,0))
 
 	def incr_setting(self):
 		self.selected_setting += 1
@@ -551,7 +591,6 @@ class Main:
 			if type(opt) == tuple:
 				return
 			opt()
-
 
 	def setup(self):
 		username = getpass.getuser()
@@ -620,6 +659,7 @@ class Main:
 				self.video_lengths[self.video_name] = self.video.get_metadata()[
 					"duration"
 				]
+			self.start_video_menu()
 			return
 
 		self.current_folder = new_dir
@@ -705,6 +745,44 @@ class Main:
 				self.l2.press(delta)
 			else:
 				self.l2.release()
+		
+		pressed = pygame.key.get_pressed()
+
+		if pressed[pygame.K_SPACE]:
+			self.k_enter.press(delta)
+		else:
+			self.k_enter.release()
+		if pressed[pygame.K_LSHIFT]:
+			if pressed[pygame.K_LEFT]:
+				self.k_l2.press(delta)
+			else:
+				self.k_l2.release()
+			if pressed[pygame.K_RIGHT]:
+				self.k_r2.press(delta)
+			else:
+				self.k_r2.release()
+		
+		else:
+			if pressed[pygame.K_LEFT]:
+				self.k_left.press(delta)
+			else:
+				self.k_left.release()
+			if pressed[pygame.K_RIGHT]:
+				self.k_right.press(delta)
+			else:
+				self.k_right.release()
+		if pressed[pygame.K_UP]:
+			self.k_up.press(delta)
+		else:
+			self.k_up.release()
+		if pressed[pygame.K_DOWN]:
+			self.k_down.press(delta)
+		else:
+			self.k_down.release()
+		if pressed[pygame.K_ESCAPE]:
+			self.k_back.press(delta)
+		else:
+			self.k_back.release()
 
 	def list_dir(self, dir, scan=False):
 		if scan:
@@ -954,5 +1032,5 @@ def run():
 	g = Main()
 	g.run()
 
-# if __name__ == "__main__":
-# 	run()
+if __name__ == "__main__":
+	run()
